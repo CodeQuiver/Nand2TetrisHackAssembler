@@ -56,7 +56,7 @@ class TestHackAssemblerNoSymbols:
     # To run just this class- syntax
     #  pytest hack_assembler/test/test_hack_assembler.py::TestHackAssembler
     def test_add(self):
-        result_add = hack_assembler.main("hack_assembler/translation_target/Add.asm")
+        result_add = hack_assembler.main("translation_target/Add.asm")
         assert isinstance(result_add, list)
         assert len(result_add) == 6
         # result as code: ["@2", "D=A", "@3", "D=D+A", "@0", "M=D"]
@@ -84,7 +84,7 @@ class TestHackAssemblerNoSymbols:
 
         # ipdb.set_trace()
 
-        result_max = hack_assembler.main("hack_assembler/translation_target/MaxL.asm")
+        result_max = hack_assembler.main("translation_target/MaxL.asm")
         assert isinstance(result_max, list)
 
         assert len(result_max) == 16
@@ -131,7 +131,7 @@ class TestHackAssemblerNoSymbols:
             ), f"line {i} expected {expected} but got actual {result_max[i]}"
 
     def test_output_written_in_file_add(self):
-        result_add = hack_assembler.main("hack_assembler/translation_target/Add.asm")
+        result_add = hack_assembler.main("translation_target/Add.asm")
         assert isinstance(result_add, list)
         assert len(result_add) == 6
         # result as code: ["@2", "D=A", "@3", "D=D+A", "@0", "M=D"]
@@ -144,21 +144,21 @@ class TestHackAssemblerNoSymbols:
             "1110001100001000",
         ]
 
-        with open("hack_assembler/translation_target/Prog.hack", "r") as output_file:
+        with open("translation_target/Prog.hack", "r") as output_file:
             for i, line in enumerate(output_file):
                 assert (
                     line.removesuffix("\n") == result_add[i]
                 ), f"line {i} expected {result_add[i]} but got actual {line.removesuffix("\n")}"
 
     def test_rectl(self):
-        hack_assembler.main("hack_assembler/translation_target/RectL.asm")
+        hack_assembler.main("translation_target/RectL.asm")
 
-        output_file = open("hack_assembler/translation_target/Prog.hack", "r")
+        output_file = open("translation_target/Prog.hack", "r")
         output_lines = output_file.readlines()
         output_file.close()
 
         with open(
-            "hack_assembler/translation_target/Rect_test_expected.hack", "r"
+            "translation_target/Rect_test_expected.hack", "r"
         ) as expected_output_file:
             expected_output_lines = expected_output_file.readlines()
             assert len(output_lines) == len(expected_output_lines)
@@ -171,14 +171,14 @@ class TestHackAssemblerNoSymbols:
                 ), f"line {i} expected {expected} but got actual {actual}"
 
     def test_pongl(self):
-        hack_assembler.main("hack_assembler/translation_target/PongL.asm")
+        hack_assembler.main("translation_target/PongL.asm")
 
-        output_file = open("hack_assembler/translation_target/Prog.hack", "r")
+        output_file = open("translation_target/Prog.hack", "r")
         output_lines = output_file.readlines()
         output_file.close()
 
         with open(
-            "hack_assembler/translation_target/Pong_test_expected.hack", "r"
+            "translation_target/Pong_test_expected.hack", "r"
         ) as expected_output_file:
             expected_output_lines = expected_output_file.readlines()
             assert len(output_lines) == len(expected_output_lines)
@@ -194,7 +194,7 @@ class TestHackAssemblerNoSymbols:
 class TestHackAssemblerWithSymbols:
     def test_max(self):
 
-        result_max = hack_assembler.main("hack_assembler/translation_target/Max.asm")
+        result_max = hack_assembler.main("translation_target/Max.asm")
         assert isinstance(result_max, list)
 
         assert len(result_max) == 16
@@ -224,14 +224,14 @@ class TestHackAssemblerWithSymbols:
             ), f"line {i} expected {expected} but got actual {result_max[i]}"
 
     def test_rect(self):
-        hack_assembler.main("hack_assembler/translation_target/Rect.asm")
+        hack_assembler.main("translation_target/Rect.asm")
 
-        output_file = open("hack_assembler/translation_target/Prog.hack", "r")
+        output_file = open("translation_target/Prog.hack", "r")
         output_lines = output_file.readlines()
         output_file.close()
 
         with open(
-            "hack_assembler/translation_target/Rect_test_expected.hack", "r"
+            "translation_target/Rect_test_expected.hack", "r"
         ) as expected_output_file:
             expected_output_lines = expected_output_file.readlines()
             assert len(output_lines) == len(expected_output_lines)
@@ -244,14 +244,14 @@ class TestHackAssemblerWithSymbols:
                 ), f"line {i} expected {expected} but got actual {actual}"
 
     def test_pong(self):
-        hack_assembler.main("hack_assembler/translation_target/Pong.asm")
+        hack_assembler.main("translation_target/Pong.asm")
 
-        output_file = open("hack_assembler/translation_target/Prog.hack", "r")
+        output_file = open("translation_target/Prog.hack", "r")
         output_lines = output_file.readlines()
         output_file.close()
 
         with open(
-            "hack_assembler/translation_target/Pong_test_expected.hack", "r"
+            "translation_target/Pong_test_expected.hack", "r"
         ) as expected_output_file:
             expected_output_lines = expected_output_file.readlines()
             assert len(output_lines) == len(expected_output_lines)
