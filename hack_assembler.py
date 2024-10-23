@@ -78,7 +78,8 @@ comp_dict = {
 # "symbol":"decimal value",
 # Note- first address for Variable symbols will be
 # RAM 16
-symbol_table_dict = {
+symbol_table_dict = {}
+symbol_table_dict_original = {
     "R0": 0,
     "SP": 0,
     "R1": 1,
@@ -221,6 +222,11 @@ def main(path: str):
     """
     output_binary = []
 
+    # reset the global to ensure it only contains the shared symbols to start
+    # TODO- verify using debug that this is necessary/ review scoping principles and best practices for handling this later
+    # conceptually I prefer to not rely too much on shared states
+    symbol_table_dict = symbol_table_dict_original
+
     print("PATH: " + path)
 
     with open(path, mode="r") as file:
@@ -233,6 +239,19 @@ def main(path: str):
         ]
 
         # print("CLEAN LINES: " + str(clean_lines))
+
+        # TODO- first pass- populate symbol table with variables
+        for line in clean_lines:
+            if line.startswith("("):
+                # add the label and the address of the next instruction to symbol_table_dict as key:value
+                continue
+            # TODO- fix up following logic lines, not quite right
+            # elif line.startswith("@") and line[1].isalpha():
+            #     # e.g. "@LABEL"
+            #     # check if label exists in symbol_table_dict
+            #         # if yes, continue
+            #         # if no, add it
+        # TODO- second pass- replace source code lines using variables with their corresponding decimal values/addresses
 
         for line in clean_lines:
             if line.startswith("@"):
