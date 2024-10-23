@@ -32,13 +32,24 @@ class TestCInstruction:
         "M=-1: should encode to "1110111010001000"
         """
         assert hack_assembler.c_instruction("M=-1") == "1110111010001000"
-        # TODO- fix this test failing
 
     def test_md_eq_m_plus_1(self):
         """
         "MD=M+1" should encode to "1111110111011000"
         """
         assert hack_assembler.c_instruction("MD=M+1") == "1111110111011000"
+
+    def test_no_dest_comp_d_and_jump_jgt(self):
+        """
+        "D;JGT" should encode to "1110001100000001"
+        """
+        assert hack_assembler.c_instruction("D;JGT") == "1110001100000001"
+
+    def test_no_dest_comp_zero_and_jmp(self):
+        """
+        "0;JMP" should encode to "1110101010000111"
+        """
+        assert hack_assembler.c_instruction("0;JMP") == "1110101010000111"
 
 
 class TestHackAssemblerNoSymbols:
