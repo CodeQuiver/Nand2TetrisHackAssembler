@@ -213,12 +213,25 @@ def populate_symbol_table(instruction_list: list[str], symbol_table: dict[str, i
     # • Variable symbols
 
     for line_number, inst in enumerate(instruction_list):
-        # handle Labels- value is line number of next line
+        # handle Labels- value corresponds to line number of next line, but must be offset right?
         if inst.startswith("("):
             label = inst.strip("()")
 
             if not label.isdecimal():
                 symbol_table[label] = line_number + 1
+                # trying to assign memory address of the next instruction
+
+    for counter, inst in enumerate(instruction_list):
+        if inst.startswith("@"):
+            # handle named variables- not they aren't ever used in C-insructions, only A-instructions
+            # Any symbol xxx which is neither predefined, nor defined elsewhere using an (xxx) label
+            # declaration, is treated as a variable
+            #
+            var = inst[1:]
+
+            if not var.isdecimal() and var not in symbol_table:
+                # give vars running address starting at 16
+                symbol_table[var] = counter + 16
 
     return symbol_table
 
@@ -258,24 +271,17 @@ def main(path: str):
 
         # print("CLEAN LINES: " + str(clean_lines))
 
-        # TODO- first pass- populate symbol table with labels and variables
+        # populate symbol table with labels and variables
         global symbol_table_dict
         symbol_table_dict = populate_symbol_table(symbol_table_dict)
-
-        # TODO- fix up following logic lines, not quite right
-        # elif line.startswith("@") and line[1].isalpha():
-        #     # e.g. "@LABEL"
-        #     # check if label exists in symbol_table_dict
-        #         # if yes, continue
-        #         # if no, add it
-        # TODO- second pass- replace source code lines using variables with their corresponding decimal values/addresses
 
         for line in clean_lines:
             if line.startswith("@"):
                 output_line = a_instruction(line)
+                # internal logic in method handles translating variables and labels
                 output_binary.append(output_line)
             elif line.startswith("("):
-                # ignore label lines
+                # ignore label lines thamselves in translation
                 continue
             else:
                 # must be c-instruction
