@@ -78,7 +78,7 @@ comp_dict = {
 # "symbol":"decimal value",
 # Note- first address for Variable symbols will be
 # RAM 16
-symbol_table_dict = {}
+
 symbol_table_dict_original = {
     "R0": 0,
     "SP": 0,
@@ -104,6 +104,8 @@ symbol_table_dict_original = {
     "SCREEN": 16384,
     "KBD": 24576,
 }
+
+symbol_table_dict = symbol_table_dict_original
 
 
 def a_instruction(instruction: str):
@@ -272,8 +274,7 @@ def main(path: str):
         # print("CLEAN LINES: " + str(clean_lines))
 
         # populate symbol table with labels and variables
-        global symbol_table_dict
-        symbol_table_dict = populate_symbol_table(symbol_table_dict)
+        symbol_table_dict = populate_symbol_table(clean_lines, symbol_table_dict)
 
         for line in clean_lines:
             if line.startswith("@"):
