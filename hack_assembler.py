@@ -117,7 +117,8 @@ def a_instruction(instruction: str):
     """
     # 1- Set first bit to 0
     # 2- if command is a decimal value, translate to binary using 15 bits
-    # 3- if command is a symbol/variable, just return the 0 and nothing else for now
+    # 3- if command is a symbol, apply its translation using symbol table
+    #    (this handles applying all label and preset symbols)
     command = instruction[1:]
 
     if not command.isdecimal():
@@ -129,8 +130,8 @@ def a_instruction(instruction: str):
                 f"{command} not found in symbol table, a-instruction '{instruction}' can't be translated"
             )
 
-    binary_str = "{0:015b}".format(int(command))
-    return f"0{binary_str}"
+    binary_command = "{0:015b}".format(int(command))
+    return f"0{binary_command}"
 
 
 def destination(dest_command: str):
@@ -206,6 +207,22 @@ def c_instruction(instruction: str):
     return result
 
 
+def populate_symbol_table(instruction_list: list[str], symbol_table: dict[str, int]):
+    # Symbols
+    # • Label symbols
+    # • Variable symbols
+
+    for line_number, inst in enumerate(instruction_list):
+        # handle Labels- value is line number of next line
+        if inst.startswith("("):
+            label = inst.strip("()")
+
+            if not label.isdecimal():
+                symbol_table[label] = line_number + 1
+
+    return symbol_table
+
+
 def main(path: str):
     """
         1- read file at given path line-by-line
@@ -225,6 +242,7 @@ def main(path: str):
     # reset the global to ensure it only contains the shared symbols to start
     # TODO- verify using debug that this is necessary/ review scoping principles and best practices for handling this later
     # conceptually I prefer to not rely too much on shared states
+    global symbol_table_dict
     symbol_table_dict = symbol_table_dict_original
 
     print("PATH: " + path)
@@ -240,17 +258,16 @@ def main(path: str):
 
         # print("CLEAN LINES: " + str(clean_lines))
 
-        # TODO- first pass- populate symbol table with variables
-        for line in clean_lines:
-            if line.startswith("("):
-                # add the label and the address of the next instruction to symbol_table_dict as key:value
-                continue
-            # TODO- fix up following logic lines, not quite right
-            # elif line.startswith("@") and line[1].isalpha():
-            #     # e.g. "@LABEL"
-            #     # check if label exists in symbol_table_dict
-            #         # if yes, continue
-            #         # if no, add it
+        # TODO- first pass- populate symbol table with labels and variables
+        global symbol_table_dict
+        symbol_table_dict = populate_symbol_table(symbol_table_dict)
+
+        # TODO- fix up following logic lines, not quite right
+        # elif line.startswith("@") and line[1].isalpha():
+        #     # e.g. "@LABEL"
+        #     # check if label exists in symbol_table_dict
+        #         # if yes, continue
+        #         # if no, add it
         # TODO- second pass- replace source code lines using variables with their corresponding decimal values/addresses
 
         for line in clean_lines:
