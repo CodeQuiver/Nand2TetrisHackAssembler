@@ -254,7 +254,7 @@ def main(path: str):
     """
     output_binary = []
 
-    # reset the global to ensure it only contains the shared symbols to start
+    # reset the global to ensure it only contains the shared symbols to start- redundant for testing purposes
     # TODO- verify using debug that this is necessary/ review scoping principles and best practices for handling this later
     # conceptually I prefer to not rely too much on shared states
     global symbol_table_dict
@@ -265,13 +265,16 @@ def main(path: str):
     with open(path, mode="r") as file:
         # Syntax Notes:
         # `re.sub(r"\s+", "", line)` is for removing all whitespaces- strip only trims leading and trailing
-        clean_lines = [
+        subbed_lines = [
             re.sub(r"\s+|//.*$", "", line)
             for line in file
             if line and (not line.isspace()) and (not line.startswith("//"))
         ]
 
-        # print("CLEAN LINES: " + str(clean_lines))
+        # subbed lines may output empty lines so need second filter round
+        clean_lines = [line for line in subbed_lines if line and (not line.isspace())]
+
+        print("CLEAN LINES: " + str(clean_lines))
 
         # populate symbol table with labels and variables
         symbol_table_dict = populate_symbol_table(clean_lines, symbol_table_dict)
@@ -282,12 +285,15 @@ def main(path: str):
                 # internal logic in method handles translating variables and labels
                 output_binary.append(output_line)
             elif line.startswith("("):
-                # ignore label lines thamselves in translation
+                # ignore label lines themselves in translation
                 continue
-            else:
+            elif line:
                 # must be c-instruction
                 output_line = c_instruction(line)
                 output_binary.append(output_line)
+            else:
+                # double checks empty lines skipped
+                continue
 
     # print("output_binary: " + str(output_binary))
 
