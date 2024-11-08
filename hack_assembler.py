@@ -287,13 +287,10 @@ def main(path: str):
             elif line.startswith("("):
                 # ignore label lines themselves in translation
                 continue
-            elif line:
+            else:
                 # must be c-instruction
                 output_line = c_instruction(line)
                 output_binary.append(output_line)
-            else:
-                # double checks empty lines skipped
-                continue
 
     # print("output_binary: " + str(output_binary))
 
