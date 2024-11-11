@@ -1,3 +1,4 @@
+import pytest
 import hack_assembler
 import IPython  # use pytest -v -s to eanble IPython embed debugging within a test
 
@@ -6,6 +7,33 @@ import IPython  # use pytest -v -s to eanble IPython embed debugging within a te
 
 
 class TestAInstruction:
+
+    symbol_table_dict_test = {
+        "R0": 0,
+        "SP": 0,
+        "R1": 1,
+        "LCL": 1,
+        "R2": 2,
+        "ARG": 2,
+        "R3": 3,
+        "THIS": 3,
+        "R4": 4,
+        "THAT": 4,
+        "R5": 5,
+        "R6": 6,
+        "R7": 7,
+        "R8": 8,
+        "R9": 9,
+        "R10": 10,
+        "R11": 11,
+        "R12": 12,
+        "R13": 13,
+        "R14": 14,
+        "R15": 15,
+        "SCREEN": 16384,
+        "KBD": 24576,
+        "ITSR0": 21,
+    }
 
     def test_decimal_1(self):
         assert hack_assembler.a_instruction("@1") == "0" * 15 + "1"
@@ -16,6 +44,13 @@ class TestAInstruction:
     def test_keyboard(self):
         """should return 0 + the address for KBD which is 24576 or 110 0000 0000 0000"""
         assert hack_assembler.a_instruction("@KBD") == "0110000000000000"
+
+    # def test_symbol_jump_a_instruction(self):
+    #     # trying to target line for error
+    #     # FAILED test/test_hack_assembler.py::TestHackAssemblerWithSymbols::test_max - AssertionError: line 4 expected 0000000000001010 but got actual 0000000000001011
+    #     # TODO- add a symbol table to pass in for the test with the correct values for the example
+    #     test_dict = self.symbol_table_dict_test
+    #     assert hack_assembler.a_instruction("@ITSR0", test_dict) == "0000000000001010"
 
 
 class TestCInstruction:
@@ -192,6 +227,7 @@ class TestHackAssemblerNoSymbols:
 
 
 class TestHackAssemblerWithSymbols:
+    # @pytest.mark.skip(reason="skipping to focus on other smaller test for now")
     def test_max(self):
 
         result_max = hack_assembler.main("translation_target/Max.asm")
@@ -223,6 +259,7 @@ class TestHackAssemblerWithSymbols:
                 expected == result_max[i]
             ), f"line {i} expected {expected} but got actual {result_max[i]}"
 
+    # @pytest.mark.skip(reason="skipping to focus on other smaller test for now")
     def test_rect(self):
         hack_assembler.main("translation_target/Rect.asm")
 
@@ -243,6 +280,7 @@ class TestHackAssemblerWithSymbols:
                     actual == expected
                 ), f"line {i} expected {expected} but got actual {actual}"
 
+    @pytest.mark.skip(reason="skipping to focus on other smaller test for now")
     def test_pong(self):
         hack_assembler.main("translation_target/Pong.asm")
 

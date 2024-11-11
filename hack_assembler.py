@@ -108,7 +108,7 @@ symbol_table_dict_original = {
 symbol_table_dict = symbol_table_dict_original
 
 
-def a_instruction(instruction: str):
+def a_instruction(instruction: str, symbol_table_local: dict = symbol_table_dict):
     """If line is an a-instruction, call this function.
 
     Args:
@@ -125,7 +125,7 @@ def a_instruction(instruction: str):
 
     if not command.isdecimal():
         try:
-            command = symbol_table_dict[command]
+            command = symbol_table_local[command]
             # fetch decimal encoding
         except KeyError:
             raise KeyError(
@@ -213,19 +213,31 @@ def populate_symbol_table(instruction_list: list[str], symbol_table: dict[str, i
     # Symbols
     # • Label symbols
     # • Variable symbols
-
+    skipped_line_count = 0
+    lines_to_remove = []
     for line_number, inst in enumerate(instruction_list):
         # handle Labels- value corresponds to line number of next line, but must be offset right?
         if inst.startswith("("):
             label = inst.strip("()")
 
-            if not label.isdecimal():
-                symbol_table[label] = line_number + 1
+            if not label.isdecimal() and label not in symbol_table:
+                symbol_table[label] = line_number - skipped_line_count
                 # trying to assign memory address of the next instruction
+
+                # add to list of lines to remove from instruction list
+                lines_to_remove.append(line_number)
+
+                # add to count of skipped lines
+                skipped_line_count = skipped_line_count + 1
+
+    # cleanup instruction list- remove labels since they don't count as lines
+    for line_index in sorted(lines_to_remove, reverse=True):
+        # reversed so we're removing right to left and therefore indexes aren't changing as we remove lower ones
+        del instruction_list[line_index]
 
     for counter, inst in enumerate(instruction_list):
         if inst.startswith("@"):
-            # handle named variables- not they aren't ever used in C-insructions, only A-instructions
+            # handle named variables- note they aren't ever used in C-insructions, only A-instructions
             # Any symbol xxx which is neither predefined, nor defined elsewhere using an (xxx) label
             # declaration, is treated as a variable
             #
@@ -281,7 +293,7 @@ def main(path: str):
 
         for line in clean_lines:
             if line.startswith("@"):
-                output_line = a_instruction(line)
+                output_line = a_instruction(line, symbol_table_dict)
                 # internal logic in method handles translating variables and labels
                 output_binary.append(output_line)
             elif line.startswith("("):
