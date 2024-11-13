@@ -48,13 +48,6 @@ class TestAInstruction:
         """should return 0 + the address for KBD which is 24576 or 110 0000 0000 0000"""
         assert a_instruction("@KBD", self.symbol_table_dict_test) == "0110000000000000"
 
-    # def test_symbol_jump_a_instruction(self):
-    #     # trying to target line for error
-    #     # FAILED test/test_hack_assembler.py::TestHackAssemblerWithSymbols::test_max - AssertionError: line 4 expected 0000000000001010 but got actual 0000000000001011
-    #     # TODO- add a symbol table to pass in for the test with the correct values for the example
-    #     test_dict = self.symbol_table_dict_test
-    #     assert hack_assembler.a_instruction("@ITSR0", test_dict) == "0000000000001010"
-
 
 class TestCInstruction:
     # Encodings:
@@ -265,7 +258,6 @@ class TestHackAssemblerWithSymbols:
     # @pytest.mark.skip(reason="skipping to focus on other smaller test for now")
     def test_rect(self):
         main("translation_target/Rect.asm")
-        # TODO- check if calling this way carries over scope as if hack_assembler were an object?
 
         output_file = open("translation_target/Prog.hack", "r")
         output_lines = output_file.readlines()
@@ -284,7 +276,7 @@ class TestHackAssemblerWithSymbols:
                     actual == expected
                 ), f"line {i} expected {expected} but got actual {actual}"
 
-    @pytest.mark.skip(reason="skipping to focus on other smaller test for now")
+    # @pytest.mark.skip(reason="skipping to focus on other smaller test for now")
     def test_pong(self):
         main("translation_target/Pong.asm")
 

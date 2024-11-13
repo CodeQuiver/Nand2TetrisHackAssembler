@@ -267,10 +267,9 @@ def main(path: str):
     """
     output_binary = []
 
-    # reset the global to ensure it only contains the shared symbols to start- redundant for testing purposes
-    # TODO- verify using debug that this is necessary/ review scoping principles and best practices for handling this later
-    # conceptually I prefer to not rely too much on shared states
-    symbol_table_dict = symbol_table_dict_original
+    # reset the global to ensure it only contains the shared symbols to start
+    symbol_table_dict = symbol_table_dict_original.copy()
+    # due to Python's handling of memory, need to explicitly copy original to not just point to it
 
     print("PATH: " + path)
 
