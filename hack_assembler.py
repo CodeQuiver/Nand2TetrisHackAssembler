@@ -105,14 +105,13 @@ symbol_table_dict_original = {
     "KBD": 24576,
 }
 
-symbol_table_dict = symbol_table_dict_original
 
-
-def a_instruction(instruction: str, symbol_table_local: dict = symbol_table_dict):
+def a_instruction(instruction: str, symbol_table_local: dict):
     """If line is an a-instruction, call this function.
 
     Args:
         instruction (str): individual instruction to encode
+        symbol_table_local (dict): current symbol table, using local to avoid global state issues
 
     Returns:
         string: 16-bit machine code representation of instruction
@@ -271,7 +270,6 @@ def main(path: str):
     # reset the global to ensure it only contains the shared symbols to start- redundant for testing purposes
     # TODO- verify using debug that this is necessary/ review scoping principles and best practices for handling this later
     # conceptually I prefer to not rely too much on shared states
-    global symbol_table_dict
     symbol_table_dict = symbol_table_dict_original
 
     print("PATH: " + path)

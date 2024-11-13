@@ -36,14 +36,23 @@ class TestAInstruction:
     }
 
     def test_decimal_1(self):
-        assert hack_assembler.a_instruction("@1") == "0" * 15 + "1"
+        assert (
+            hack_assembler.a_instruction("@1", self.symbol_table_dict_test)
+            == "0" * 15 + "1"
+        )
 
     def test_decimal_2(self):
-        assert hack_assembler.a_instruction("@2") == "0" * 14 + "10"
+        assert (
+            hack_assembler.a_instruction("@2", self.symbol_table_dict_test)
+            == "0" * 14 + "10"
+        )
 
     def test_keyboard(self):
         """should return 0 + the address for KBD which is 24576 or 110 0000 0000 0000"""
-        assert hack_assembler.a_instruction("@KBD") == "0110000000000000"
+        assert (
+            hack_assembler.a_instruction("@KBD", self.symbol_table_dict_test)
+            == "0110000000000000"
+        )
 
     # def test_symbol_jump_a_instruction(self):
     #     # trying to target line for error
