@@ -235,7 +235,8 @@ def populate_symbol_table(instruction_list: list[str], symbol_table: dict[str, i
         # reversed so we're removing right to left and therefore indexes aren't changing as we remove lower ones
         del instruction_list[line_index]
 
-    for counter, inst in enumerate(instruction_list):
+    running_address_offset = 0
+    for inst in instruction_list:
         if inst.startswith("@"):
             # handle named variables- note they aren't ever used in C-insructions, only A-instructions
             # Any symbol xxx which is neither predefined, nor defined elsewhere using an (xxx) label
@@ -245,7 +246,8 @@ def populate_symbol_table(instruction_list: list[str], symbol_table: dict[str, i
 
             if not var.isdecimal() and var not in symbol_table:
                 # give vars running address starting at 16
-                symbol_table[var] = counter + 16
+                symbol_table[var] = running_address_offset + 16
+                running_address_offset = running_address_offset + 1
 
     return symbol_table
 
