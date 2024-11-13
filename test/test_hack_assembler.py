@@ -1,6 +1,9 @@
 import pytest
-import hack_assembler
-import IPython  # use pytest -v -s to eanble IPython embed debugging within a test
+import IPython
+
+from hack_assembler import a_instruction, c_instruction, main
+
+# use pytest -v -s to eanble IPython embed debugging within a test
 
 # command-line tests to copy-paste:
 # python hack_assembler/hack_assembler.py "hack_assembler/translation_target/Add.asm"
@@ -36,23 +39,14 @@ class TestAInstruction:
     }
 
     def test_decimal_1(self):
-        assert (
-            hack_assembler.a_instruction("@1", self.symbol_table_dict_test)
-            == "0" * 15 + "1"
-        )
+        assert a_instruction("@1", self.symbol_table_dict_test) == "0" * 15 + "1"
 
     def test_decimal_2(self):
-        assert (
-            hack_assembler.a_instruction("@2", self.symbol_table_dict_test)
-            == "0" * 14 + "10"
-        )
+        assert a_instruction("@2", self.symbol_table_dict_test) == "0" * 14 + "10"
 
     def test_keyboard(self):
         """should return 0 + the address for KBD which is 24576 or 110 0000 0000 0000"""
-        assert (
-            hack_assembler.a_instruction("@KBD", self.symbol_table_dict_test)
-            == "0110000000000000"
-        )
+        assert a_instruction("@KBD", self.symbol_table_dict_test) == "0110000000000000"
 
     # def test_symbol_jump_a_instruction(self):
     #     # trying to target line for error
@@ -69,38 +63,38 @@ class TestCInstruction:
         """
         "D=D+A": "1110000010010000",
         """
-        assert hack_assembler.c_instruction("D=D+A") == "1110000010010000"
+        assert c_instruction("D=D+A") == "1110000010010000"
 
     def test_m_eq_neg_1(self):
         """
         "M=-1: should encode to "1110111010001000"
         """
-        assert hack_assembler.c_instruction("M=-1") == "1110111010001000"
+        assert c_instruction("M=-1") == "1110111010001000"
 
     def test_md_eq_m_plus_1(self):
         """
         "MD=M+1" should encode to "1111110111011000"
         """
-        assert hack_assembler.c_instruction("MD=M+1") == "1111110111011000"
+        assert c_instruction("MD=M+1") == "1111110111011000"
 
     def test_no_dest_comp_d_and_jump_jgt(self):
         """
         "D;JGT" should encode to "1110001100000001"
         """
-        assert hack_assembler.c_instruction("D;JGT") == "1110001100000001"
+        assert c_instruction("D;JGT") == "1110001100000001"
 
     def test_no_dest_comp_zero_and_jmp(self):
         """
         "0;JMP" should encode to "1110101010000111"
         """
-        assert hack_assembler.c_instruction("0;JMP") == "1110101010000111"
+        assert c_instruction("0;JMP") == "1110101010000111"
 
 
 class TestHackAssemblerNoSymbols:
     # To run just this class- syntax
     #  pytest hack_assembler/test/test_hack_assembler.py::TestHackAssembler
     def test_add(self):
-        result_add = hack_assembler.main("translation_target/Add.asm")
+        result_add = main("translation_target/Add.asm")
         assert isinstance(result_add, list)
         assert len(result_add) == 6
         # result as code: ["@2", "D=A", "@3", "D=D+A", "@0", "M=D"]
@@ -128,7 +122,7 @@ class TestHackAssemblerNoSymbols:
 
         # ipdb.set_trace()
 
-        result_max = hack_assembler.main("translation_target/MaxL.asm")
+        result_max = main("translation_target/MaxL.asm")
         assert isinstance(result_max, list)
 
         assert len(result_max) == 16
@@ -175,7 +169,7 @@ class TestHackAssemblerNoSymbols:
             ), f"line {i} expected {expected} but got actual {result_max[i]}"
 
     def test_output_written_in_file_add(self):
-        result_add = hack_assembler.main("translation_target/Add.asm")
+        result_add = main("translation_target/Add.asm")
         assert isinstance(result_add, list)
         assert len(result_add) == 6
         # result as code: ["@2", "D=A", "@3", "D=D+A", "@0", "M=D"]
@@ -195,7 +189,7 @@ class TestHackAssemblerNoSymbols:
                 ), f"line {i} expected {result_add[i]} but got actual {line.removesuffix("\n")}"
 
     def test_rectl(self):
-        hack_assembler.main("translation_target/RectL.asm")
+        main("translation_target/RectL.asm")
 
         output_file = open("translation_target/Prog.hack", "r")
         output_lines = output_file.readlines()
@@ -215,7 +209,7 @@ class TestHackAssemblerNoSymbols:
                 ), f"line {i} expected {expected} but got actual {actual}"
 
     def test_pongl(self):
-        hack_assembler.main("translation_target/PongL.asm")
+        main("translation_target/PongL.asm")
 
         output_file = open("translation_target/Prog.hack", "r")
         output_lines = output_file.readlines()
@@ -239,7 +233,7 @@ class TestHackAssemblerWithSymbols:
     # @pytest.mark.skip(reason="skipping to focus on other smaller test for now")
     def test_max(self):
 
-        result_max = hack_assembler.main("translation_target/Max.asm")
+        result_max = main("translation_target/Max.asm")
         assert isinstance(result_max, list)
 
         assert len(result_max) == 16
@@ -270,7 +264,8 @@ class TestHackAssemblerWithSymbols:
 
     # @pytest.mark.skip(reason="skipping to focus on other smaller test for now")
     def test_rect(self):
-        hack_assembler.main("translation_target/Rect.asm")
+        main("translation_target/Rect.asm")
+        # TODO- check if calling this way carries over scope as if hack_assembler were an object?
 
         output_file = open("translation_target/Prog.hack", "r")
         output_lines = output_file.readlines()
@@ -291,7 +286,7 @@ class TestHackAssemblerWithSymbols:
 
     @pytest.mark.skip(reason="skipping to focus on other smaller test for now")
     def test_pong(self):
-        hack_assembler.main("translation_target/Pong.asm")
+        main("translation_target/Pong.asm")
 
         output_file = open("translation_target/Prog.hack", "r")
         output_lines = output_file.readlines()
